@@ -1,0 +1,14 @@
+[19-Jan-2023 15:26:19 Asia/Colombo] PHP Fatal error:  Uncaught Exception: Database query failed: "SELECT * FROM product WHERE id=" (You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1) in /home3/hna0s9ce/public_html/util/database.php:51
+Stack trace:
+#0 /home3/hna0s9ce/public_html/util/databaseobject.php(141): MySQLDatabase->query('SELECT * FROM p...')
+#1 /home3/hna0s9ce/public_html/util/databaseobject.php(171): DatabaseObject::find_by_sql('SELECT * FROM p...')
+#2 /home3/hna0s9ce/public_html/production/proccess/LiveData/Return_item_table.php(29): DatabaseObject::find_by_id('')
+#3 {main}
+  thrown in /home3/hna0s9ce/public_html/util/database.php on line 51
+[18-May-2023 17:49:56 Asia/Colombo] PHP Fatal error:  Uncaught Exception: Database query failed: "SELECT * FROM product WHERE id=" (You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1) in /home3/hna0s9ce/public_html/util/database.php:51
+Stack trace:
+#0 /home3/hna0s9ce/public_html/util/databaseobject.php(141): MySQLDatabase->query('SELECT * FROM p...')
+#1 /home3/hna0s9ce/public_html/util/databaseobject.php(171): DatabaseObject::find_by_sql('SELECT * FROM p...')
+#2 /home3/hna0s9ce/public_html/production/proccess/LiveData/Return_item_table.php(29): DatabaseObject::find_by_id('')
+#3 {main}
+  thrown in /home3/hna0s9ce/public_html/util/database.php on line 51

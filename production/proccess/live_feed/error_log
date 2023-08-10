@@ -1,0 +1,2 @@
+[21-Dec-2022 06:06:18 Asia/Colombo] PHP Warning:  mysqli_connect(): (HY000/3118): Access denied for user 'hna0s9ce_saaims'@'localhost'. Account is locked. in /home3/hna0s9ce/public_html/util/database.php on line 20
+[21-Dec-2022 06:06:18 Asia/Colombo] PHP Warning:  mysqli_error() expects parameter 1 to be mysqli, bool given in /home3/hna0s9ce/public_html/util/database.php on line 22
