@@ -147,12 +147,13 @@ if (!(isset($_POST["id"]) && $payment = Payment::find_by_id($_POST["id"]))) {
                           ?>
                         </select>
                       </div>
-                      <div class="form-group">
+                      <div id='branch' lass="form-group">
                         <label>Branch</label>
                         <input type="text" class="form-control" placeholder="Branch" name="c_branch" id="txtBranch">
                       </div>
+                      <br>
                       <div class="form-group">
-                        <label>Cheque Number</label>
+                        <label id='chq_no'>Cheque Number</label>
                         <input type="text" class="form-control" placeholder="Cheque Number" name="c_number" id="txtChequeNo">
                       </div>
                     </div>
@@ -161,7 +162,7 @@ if (!(isset($_POST["id"]) && $payment = Payment::find_by_id($_POST["id"]))) {
                         <label>Date</label>
                         <input type="text" class="form-control" placeholder="Date" name="c_date" id="dtpChequeDate">
                       </div>
-                      <div class="form-group">
+                      <div id="chq_val" class="form-group">
                         <label>Cheque Value</label>
                         <input type="text" class="form-control" placeholder="Cheque Value" name="c_amount" id="txtChequeAmount">
                       </div>
@@ -267,9 +268,22 @@ function loadPaymentMethod(payment_method_id) {
   if (payment_method_id == 2) {
     $("#divCheque").css({"display": "initial"});
     $("#txtAmount").prop('disabled', true);
+    $("#chq_no").html("Cheque Number");
+    $("#txtChequeNo").attr("placeholder", "Cheque Number");
+    $("#chq_val").show();
+    $("#branch").show();
+
+
   } else {
-    $("#divCheque").css({"display": "none"});
+
+    $("#divCheque").css({"display": "initial"});
     $("#txtAmount").prop('disabled', false);
+    $("#chq_no").html("Account Number");
+    $("#txtChequeNo").attr("placeholder", "Account Number");
+    $("#chq_val").hide();
+    $("#branch").hide();
+
+
   }
 }
 
