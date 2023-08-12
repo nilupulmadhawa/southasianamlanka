@@ -157,10 +157,15 @@ if (isset($_POST["save"])) {
         $payment->save();
         $payment_id = Payment::last_insert_id();
 
-        if ($payment->payment_method_id == 2) {
+        if ($payment->payment_method_id == 2 || $payment->payment_method_id == 1 ) {
             $cheque = new Cheque();
             $cheque->bank_id = $_POST["c_bank_id"];
-            $cheque->amount = $_POST["c_amount"];
+            if($payment->payment_method_id == 2){
+                $cheque->amount = $_POST["c_amount"];
+            }else{
+                $cheque->amount = $_POST[0];
+            }
+           
             $cheque->cheque_no = $_POST["c_number"];
             $cheque->date = $_POST["c_date"];
             $cheque->branch = $_POST["c_branch"];
@@ -174,7 +179,11 @@ if (isset($_POST["save"])) {
             $payment_cheque->payment_id = $payment_id;
             $payment_cheque->cheque_id = $cheque_id;
             //            $payment_cheque->amount=$allocated_amount;
-            $payment_cheque->amount = $_POST["c_amount"];
+            if($payment->payment_method_id == 2){
+                $payment_cheque->amount = $_POST["c_amount"];
+            }else{
+                $payment_cheque->amount = $_POST[0];
+            }
             $payment_cheque->save();
         }
 
@@ -198,7 +207,8 @@ if (isset($_POST["save"])) {
     } catch (Exception $exc) {
         $database->rollback();
         $_SESSION["error"] = "Failed to save payment";
-        Functions::redirect_to("./../payment.php");
+        print_r($exc);
+        // Functions::redirect_to("./../payment.php");
     }
 }
 
