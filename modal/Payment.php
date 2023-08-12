@@ -56,7 +56,7 @@ class Payment extends DatabaseObject {
     public static function find_all_by_customer_id($value) {
         global $database;
         $value = $database->escape_value($value);
-        $object_array = self::find_by_sql("SELECT payment.* FROM " . self::$table_name . " INNER JOIN payment_invoice ON payment_invoice.payment_id=payment.id INNER JOIN invoice ON payment_invoice.invoice_id=invoice.id WHERE customer_id='$value'");
+        $object_array = self::find_by_sql("SELECT payment.* FROM " . self::$table_name . "INNER JOIN payment_invoice ON payment_invoice.payment_id=payment.id INNER JOIN invoice ON payment_invoice.invoice_id=invoice.id WHERE customer_id='$value'");
         return $object_array;
     }
     

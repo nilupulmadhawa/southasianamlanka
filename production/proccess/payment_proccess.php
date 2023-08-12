@@ -136,9 +136,9 @@ if (isset($_POST["save"])) {
     $payment->payment_method_id = $_POST["payment_method_id"];
     $payment->date_time = date('Y-m-d H:i:s');
 
-    if($payment->payment_method_id == 2){
+    if ($payment->payment_method_id == 2) {
         $payment->amount = $_POST["c_amount"];
-    }else{
+    } else {
         $payment->amount = $_POST["amount"];
     }
 
@@ -163,6 +163,7 @@ if (isset($_POST["save"])) {
             $cheque->amount = $_POST["c_amount"];
             $cheque->cheque_no = $_POST["c_number"];
             $cheque->date = $_POST["c_date"];
+            $cheque->branch = $_POST["c_branch"];
             $cheque->cheque_status_id = 1;
             $cheque->save();
 
@@ -172,7 +173,7 @@ if (isset($_POST["save"])) {
             $payment_cheque = new PaymentCheque();
             $payment_cheque->payment_id = $payment_id;
             $payment_cheque->cheque_id = $cheque_id;
-//            $payment_cheque->amount=$allocated_amount;
+            //            $payment_cheque->amount=$allocated_amount;
             $payment_cheque->amount = $_POST["c_amount"];
             $payment_cheque->save();
         }
@@ -185,8 +186,8 @@ if (isset($_POST["save"])) {
             $payment_invoice->save();
 
             // if ($payment->payment_method_id == 1) {
-                $invoice = Invoice::get_recalculated_invoice_by_id($sess_invoice_payment["invoice_id"]);
-                $invoice->save();
+            $invoice = Invoice::get_recalculated_invoice_by_id($sess_invoice_payment["invoice_id"]);
+            $invoice->save();
             // }
         }
 
@@ -298,7 +299,7 @@ if (isset($_POST["cancel"])) {
         }
 
         $database->commit();
-//            Activity::log_action("Payment:" . $payment->code . " (Invoices:" . join(", ", $payment_invoice_codes) . " Cheques:" . join(", ", $payment_cheque_names) . ") - canceled ");
+        //            Activity::log_action("Payment:" . $payment->code . " (Invoices:" . join(", ", $payment_invoice_codes) . " Cheques:" . join(", ", $payment_cheque_names) . ") - canceled ");
         Activity::log_action("Payment:" . $payment->code . " - canceled ");
         $_SESSION["message"] = "Successfully canceled";
         Functions::redirect_to("./../payment_management.php");
@@ -313,4 +314,3 @@ if (isset($_POST["authenticate"])) {
     $password = $_POST["password"];
     echo json_encode(Session::authenticate_password($password));
 }
-?>

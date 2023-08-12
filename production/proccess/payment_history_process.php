@@ -62,6 +62,9 @@ if (!empty($_GET['filter_id'])) {
   <th>Invoice No</th>
   <th>Date/Time</th>
   <th>Pay. Method</th>
+  <th>Bank Name</th>
+  <th>Branch</th>
+  <th>Banking Date</th>
   <th>Pay. Status</th>
   <th>Amount</th>
   </tr>
@@ -74,6 +77,9 @@ if (!empty($_GET['filter_id'])) {
     $payment_methood = PaymentMethod::find_by_id(Payment::find_by_id($payinv->payment_id)->payment_method_id);
     $payment_status = PaymentStatus::find_by_id(Payment::find_by_id($payinv->payment_id)->payment_status_id);
     $payment_method_id = Payment::find_by_id($payinv->payment_id)->payment_status_id;
+    $payment_bank_id = Cheque::find_by_id(PaymentCheque::find_by_id(Payment::find_by_id($payinv->payment_id)->id)->cheque_id);
+    // $payment_branch = Cheque::find_by_id(Cheque::find_by_id(PaymentCheque::find_by_id(Payment::find_by_id($payinv->payment_id)->id)->cheque_id)->branch_id);
+    // $banking_date = Cheque::find_by_id(PaymentCheque::find_by_id(Payment::find_by_id($payinv->payment_id)->id)->cheque_id);
 
     if ($payment_method_id == 2) {
       $amount_total += Payment::find_by_id($payinv->payment_id)->amount;
@@ -84,30 +90,33 @@ if (!empty($_GET['filter_id'])) {
     //
     $payment_code = Payment::find_by_id($payinv->payment_id)->code;
     $output .= '<tr style="background-color:whitesmoke;">'
-    . '<td>  <a href="payment_prev.php?payment_id='.Payment::find_by_id($payinv->payment_id)->code.'" target="_blank">' . sprintf('%05d', $payment_code) . '</a></td>
+      . '<td>  <a href="payment_prev.php?payment_id=' . Payment::find_by_id($payinv->payment_id)->code . '" target="_blank">' . sprintf('%05d', $payment_code) . '</a></td>
     <td>' . Invoice::find_by_id($payinv->invoice_id)->code . '</td>
     <td>' . Payment::find_by_id($payinv->payment_id)->date_time . '</td>
     <td>' . $payment_methood->name . '</td>
+    <td>' . Bank::find_by_id($payment_bank_id->bank_id)->name . '</td>
+    <td>' . $payment_bank_id->branch . '</td>
+    <td>' . $payment_bank_id->date . '</td>
     <td>' . $payment_status->name . '</td>
     <td>' . Payment::find_by_id($payinv->payment_id)->amount . '</td>
 
     </tr>';
   }
   $output .= '<tr style="background-color:gray;color:white;" >'
-  . '<td>' . "" . '</td>
+    . '<td>' . "" . '</td>
   <td>' . "" . '</td>
   <td>' . "" . '</td>
   <td>' . "" . '</td>
   <td>' . "Total Pending Amount(LKR)" . '</td>
   <td>' . "Total Paid Amount(LKR)" . '</td>
   </tr><tr style="border-bottom:1px solid gray;">'
-  . '<td>' . "" . '</td>'
-  . '<td>' . "" . '</td>'
-  . '<td>' . "" . '</td>'
-  . '<td>' . "" . '</td>'
-  . '<td>' . number_format($amount_balance, 2) . '</td>'
-  . '<td>' . number_format($amount_total, 2) . '</td>'
-  . '</tr>';
+    . '<td>' . "" . '</td>'
+    . '<td>' . "" . '</td>'
+    . '<td>' . "" . '</td>'
+    . '<td>' . "" . '</td>'
+    . '<td>' . number_format($amount_balance, 2) . '</td>'
+    . '<td>' . number_format($amount_total, 2) . '</td>'
+    . '</tr>';
   $output .= '</tbody></table><br/>';
 
 
@@ -115,5 +124,3 @@ if (!empty($_GET['filter_id'])) {
 } else {
   echo "There is no payment history for this invoice";
 }
-
-?>
