@@ -30,6 +30,16 @@ class OverPayment extends DatabaseObject {
       return $object_array;
   }
 
+   public static function find_all_by_from_customer_id($value){
+      global $database;
+      $value=$database->escape_value($value);
+      $object_array=self::find_by_sql("SELECT over_payment.*, invoice.code as invoice_id, inv.code as from_invoice FROM over_payment
+                                       INNER JOIN invoice ON invoice.id = over_payment.invoice_id 
+                                       INNER JOIN invoice inv ON inv.id = over_payment.from_invoice 
+                                       WHERE invoice.customer_id='$value'");
+      return $object_array;
+  }
+
 }
 
 ?>
