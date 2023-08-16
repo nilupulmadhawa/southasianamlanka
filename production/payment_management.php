@@ -35,8 +35,11 @@ include 'common/upper_content.php';
                                     <th>Customer Name</th>
                                     <th>Paying Method</th>
                                     <th style='text-align:center;'>Cheque Number</th>
+                                    <th style='text-align:center;'>Account Number</th>
                                     <th style='text-align:center;'>Bank Name</th>
+                                    <th style='text-align:center;'>Branch</th>
                                     <th style='text-align:center;'>Cheque Date</th>
+                                    <th style='text-align:center;'>Deposited Date</th>
                                     <th>Date</th>
                                     <th>Amount</th>
                                     <th>Status</th>
@@ -51,9 +54,9 @@ include 'common/upper_content.php';
                                 $pagination = new Pagination($total_records);
                                 $objects = Payment::find_all_by_limit_offset($pagination->records_per_page, $pagination->offset());
 
-                                //                                foreach (Payment::find_all_by_payment_type_id(1) as $payment) {
+//                                foreach (Payment::find_all_by_payment_type_id(1) as $payment) {
                                 foreach ($objects as $payment) {
-                                ?>
+                                    ?>
                                     <tr id="<?php echo $payment->id; ?>">
                                         <td><?php echo $payment->code ?></td>
                                         <td>
@@ -71,19 +74,26 @@ include 'common/upper_content.php';
                                         <td><?php echo $payment->payment_method_id()->name ?></td>
 
                                         <?php
-                                        if ($payment->payment_method_id == 2) {
-                                            $cheque_details = PaymentCheque::find_by_payment_id($payment->id);
-                                        ?>
-                                            <td style='text-align:center;'> <?php echo $cheque_details->cheque_id()->cheque_no; ?> </td>
-                                            <td style='text-align:center;'> <b><?php echo $cheque_details->cheque_id()->bank_id()->name; ?></b> </td>
-                                            <td style='text-align:center;'> <?php echo $cheque_details->cheque_id()->date; ?> </td>
-                                        <?php
-                                        } else {
-                                        ?>
-                                            <td>--</td>
-                                            <td>--</td>
-                                            <td>--</td>
-                                        <?php
+                                        if($payment->payment_method_id == 2){
+                                          $cheque_details = PaymentCheque::find_by_payment_id($payment->id);
+                                          ?>
+                                          <td style='text-align:center;'> <?php echo $cheque_details->cheque_id()->cheque_no; ?>  </td>
+                                          <td>--</td>
+                                          <td style='text-align:center;'> <b><?php echo $cheque_details->cheque_id()->bank_id()->name; ?></b>  </td>
+                                          <td style='text-align:center;'> <b><?php echo $cheque_details->cheque_id()->branch; ?></b>  </td>
+                                          <td style='text-align:center;'> <?php echo $cheque_details->cheque_id()->date; ?>  </td>
+                                          <td>--</td>
+
+                                          <?php
+                                        }else{
+                                          ?>
+                                          <td>--</td>
+                                          <td style='text-align:center;'> <?php echo $cheque_details->cheque_id()->cheque_no; ?>  </td>
+                                          <td style='text-align:center;'> <b><?php echo $cheque_details->cheque_id()->bank_id()->name; ?></b>  </td>
+                                          <td>--</td>
+                                          <td>--</td>
+                                          <td style='text-align:center;'> <?php echo $cheque_details->cheque_id()->date; ?>  </td>
+                                          <?php
                                         }
                                         ?>
 
@@ -92,23 +102,23 @@ include 'common/upper_content.php';
                                         <td><?php echo $payment->payment_status_id()->name ?></td>
                                         <td>
                                             <form action="payment_prev.php" method="post" target="_blank" style="float: left;">
-                                                <input type="hidden" name="payment_id" value="<?php echo $payment->id ?>" />
-                                                <button type="submit" name="view" class="btn btn-primary btn-xs"><i class="fa fa-external-link-square"></i> View</button>
+                                                <input type="hidden" name="payment_id" value="<?php echo $payment->id ?>"/>
+                                                <button type="submit" name="view" class="btn btn-primary btn-xs" ><i class="fa fa-external-link-square"></i> View</button>
                                             </form>
 
                                             <?php
                                             if ($payment->payment_status_id != 3) {
-                                            ?>
+                                                ?>
                                                 <form id="form_cancel" action="proccess/payment_proccess.php" method="post" style="float: left;">
-                                                    <input type="hidden" name="payment_id" value="<?php echo $payment->id ?>" />
-                                                    <button id="<?php echo $payment->id ?>" type="submit" name="cancel" class="btn btn-danger btn-xs btnCancel"><i class="fa fa-close"></i> Cancel</button>
+                                                    <input type="hidden" name="payment_id" value="<?php echo $payment->id ?>"/>
+                                                    <button id="<?php echo $payment->id ?>" type="submit" name="cancel" class="btn btn-danger btn-xs btnCancel" ><i class="fa fa-close"></i> Cancel</button>
                                                 </form>
-                                            <?php
+                                                <?php
                                             }
                                             ?>
                                         </td>
                                     </tr>
-                                <?php
+                                    <?php
                                 }
                                 ?>
                             </tbody>
@@ -131,13 +141,13 @@ include 'common/upper_content.php';
 <?php include 'common/bottom_content.php'; ?>
 
 <script>
-    window.onfocus = function() {
-        //        location.reload();
+    window.onfocus = function () {
+//        location.reload();
     };
 
-    $(".btnCancel").click(function() {
-        //        submitForm(true, "#form_cancel");
-        //        submitForm("#form_cancel");
+    $(".btnCancel").click(function () {
+//        submitForm(true, "#form_cancel");
+//        submitForm("#form_cancel");
 
         if (UserPrivileges.checkPrivilege("proccess/privileges_authenticate.php", "Payment", "upd")) {
             submitForm(this);
@@ -150,16 +160,13 @@ include 'common/upper_content.php';
         $.ajax({
             type: 'POST',
             url: "proccess/payment_proccess.php",
-            data: {
-                cancel_payment: true,
-                payment_id: element.id
-            },
+            data: {cancel_payment: true, payment_id: element.id},
             dataType: 'json',
             async: false,
-            success: function(data) {
+            success: function (data) {
                 result = data;
             },
-            error: function(xhr) {
+            error: function(xhr){
                 alert(xhr.responseText);
             }
         });
@@ -170,17 +177,17 @@ include 'common/upper_content.php';
         $.confirm({
             title: 'Cancel Payment ?',
             content: '' +
-                '<form action="" class="formName">' +
-                '<div class="form-group">' +
-                '<label>Enter login password to cancel payment</label>' +
-                '<input type="password" placeholder="Password" class="name form-control" required />' +
-                '</div>' +
-                '</form>',
+                    '<form action="" class="formName">' +
+                    '<div class="form-group">' +
+                    '<label>Enter login password to cancel payment</label>' +
+                    '<input type="password" placeholder="Password" class="name form-control" required />' +
+                    '</div>' +
+                    '</form>',
             buttons: {
                 formSubmit: {
                     text: 'Cancel Payment',
                     btnClass: 'btn-red',
-                    action: function() {
+                    action: function () {
                         var password = this.$content.find('.name').val();
                         if (authenticate(password)) {
                             var result = submit(element);
@@ -194,7 +201,8 @@ include 'common/upper_content.php';
                                     type: 'green',
                                     typeAnimated: true,
                                     buttons: {
-                                        close: function() {}
+                                        close: function () {
+                                        }
                                     }
                                 });
                             } else {
@@ -204,7 +212,8 @@ include 'common/upper_content.php';
                                     type: 'red',
                                     typeAnimated: true,
                                     buttons: {
-                                        close: function() {}
+                                        close: function () {
+                                        }
                                     }
                                 });
                             }
@@ -215,20 +224,21 @@ include 'common/upper_content.php';
                                 type: 'red',
                                 typeAnimated: true,
                                 buttons: {
-                                    close: function() {}
+                                    close: function () {
+                                    }
                                 }
                             });
                         }
                     }
                 },
-                cancel: function() {
+                cancel: function () {
                     //close
                 },
             },
-            onContentReady: function() {
+            onContentReady: function () {
                 // bind to events
                 var jc = this;
-                this.$content.find('form').on('submit', function(e) {
+                this.$content.find('form').on('submit', function (e) {
                     // if the user submits the form by pressing enter in the field.
                     e.preventDefault();
                     jc.$$formSubmit.trigger('click'); // reference the button and click it
@@ -243,13 +253,10 @@ include 'common/upper_content.php';
         $.ajax({
             type: 'POST',
             url: "proccess/payment_proccess.php",
-            data: {
-                authenticate: true,
-                password: password
-            },
+            data: {authenticate: true, password: password},
             dataType: 'json',
             async: false,
-            success: function(data) {
+            success: function (data) {
                 result = data;
             }
         });
