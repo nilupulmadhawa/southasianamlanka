@@ -68,6 +68,26 @@ class Payment extends DatabaseObject {
         return $object_array;
     }
 
+    public static function find_all_by_limit_offset_test($limit, $offset, $search_query) {
+        $sql = "SELECT ". self::$table_name.".* FROM " . self::$table_name;
+
+        // should have use inner join with connect costomer table and invoice table and shoud search query to search invoice number and customer name
+    
+        if (!empty($search_query)) {
+            $sql .= " INNER JOIN newschema.payment_invoice  ON payment_invoice.payment_id = payment.id 
+            INNER JOIN newschema.invoice  ON invoice.id = payment_invoice.invoice_id 
+            INNER JOIN newschema.customer  ON customer.id = invoice.customer_id  WHERE invoice.code LIKE '%" . $search_query . "%' OR customer.name LIKE '%" . $search_query . "%'";
+        }
+        // else{
+        //     $sql .= " LIMIT $limit OFFSET $offset";
+        // }
+    
+    $sql .= " LIMIT $limit OFFSET $offset";
+    
+    $object_array = self::find_by_sql($sql);
+    return $object_array;
+    }
+
 }
 
 ?>
