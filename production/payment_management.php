@@ -35,8 +35,11 @@ include 'common/upper_content.php';
                                     <th>Customer Name</th>
                                     <th>Paying Method</th>
                                     <th style='text-align:center;'>Cheque Number</th>
+                                    <th style='text-align:center;'>Account Number</th>
                                     <th style='text-align:center;'>Bank Name</th>
+                                    <th style='text-align:center;'>Branch</th>
                                     <th style='text-align:center;'>Cheque Date</th>
+                                    <th style='text-align:center;'>Deposited Date</th>
                                     <th>Date</th>
                                     <th>Amount</th>
                                     <th>Status</th>
@@ -75,14 +78,21 @@ include 'common/upper_content.php';
                                           $cheque_details = PaymentCheque::find_by_payment_id($payment->id);
                                           ?>
                                           <td style='text-align:center;'> <?php echo $cheque_details->cheque_id()->cheque_no; ?>  </td>
+                                          <td>--</td>
                                           <td style='text-align:center;'> <b><?php echo $cheque_details->cheque_id()->bank_id()->name; ?></b>  </td>
+                                          <td style='text-align:center;'> <b><?php echo $cheque_details->cheque_id()->branch; ?></b>  </td>
                                           <td style='text-align:center;'> <?php echo $cheque_details->cheque_id()->date; ?>  </td>
+                                          <td>--</td>
+
                                           <?php
                                         }else{
                                           ?>
                                           <td>--</td>
+                                          <td style='text-align:center;'> <?php echo $cheque_details->cheque_id()->cheque_no; ?>  </td>
+                                          <td style='text-align:center;'> <b><?php echo $cheque_details->cheque_id()->bank_id()->name; ?></b>  </td>
                                           <td>--</td>
                                           <td>--</td>
+                                          <td style='text-align:center;'> <?php echo $cheque_details->cheque_id()->date; ?>  </td>
                                           <?php
                                         }
                                         ?>
