@@ -74,9 +74,9 @@ class Payment extends DatabaseObject {
         // should have use inner join with connect costomer table and invoice table and shoud search query to search invoice number and customer name
     
         if (!empty($search_query)) {
-            $sql .= " INNER JOIN newschema.payment_invoice  ON payment_invoice.payment_id = payment.id 
-            INNER JOIN newschema.invoice  ON invoice.id = payment_invoice.invoice_id 
-            INNER JOIN newschema.customer  ON customer.id = invoice.customer_id  WHERE invoice.code LIKE '%" . $search_query . "%' OR customer.name LIKE '%" . $search_query . "%'";
+            $sql .= " INNER JOIN payment_invoice  ON payment_invoice.payment_id = payment.id 
+            INNER JOIN invoice  ON invoice.id = payment_invoice.invoice_id 
+            INNER JOIN customer  ON customer.id = invoice.customer_id  WHERE invoice.code LIKE '%" . $search_query . "%' OR customer.name LIKE '%" . $search_query . "%'";
         }
         // else{
         //     $sql .= " LIMIT $limit OFFSET $offset";

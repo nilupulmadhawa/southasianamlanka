@@ -1,6 +1,8 @@
 <?php
 require_once './../util/initialize.php';
 include 'common/upper_content.php';
+
+$search_query = isset($_GET['txtSearch']) ? $_GET['txtSearch'] : "";
 ?>
 
 <!--page content-->
@@ -23,8 +25,27 @@ include 'common/upper_content.php';
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel">
                     <div class="x_title">
-                        <a href="payment.php" target="_blank"><button id="btnNew" type="button" class="btn btn-round btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg"><i class="glyphicon glyphicon-plus"></i> Add New</button></a>
-                        <div class="clearfix"></div>
+                        <div class="row">
+                            <div class="col-md-6 col-sm-6 col-xs-6">
+                                <a href="payment.php" target="_blank" class="btn btn-round btn-primary"
+                                    data-toggle="modal" data-target=".bs-example-modal-lg">
+                                    <i class="glyphicon glyphicon-plus"></i> Add New
+                                </a>
+                            </div>
+                            <div class="col-md-6 col-sm-6 col-xs-6 text-right">
+                                <form class="form-inline" method="GET">
+                                    <div class="input-group" style="display: flex;width: 400px;float: right;">
+                                        <input class="form-control" placeholder="Search" type="text" id="txtSearch"
+                                            name="txtSearch" value="<?php echo $search_query??"" ?>">
+                                        <div class="input-group-append" style="display: inline-block;">
+                                            <button class="btn btn-primary" type="submit"
+                                                style="vertical-align: top;">Search</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
                     </div>
                     <div class="x_content">
                         <table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
@@ -49,10 +70,9 @@ include 'common/upper_content.php';
                             <tbody>
 
                                 <?php
-
                                 $total_records = Payment::row_count();
                                 $pagination = new Pagination($total_records);
-                                $objects = Payment::find_all_by_limit_offset($pagination->records_per_page, $pagination->offset());
+                                $objects = Payment::find_all_by_limit_offset_test($pagination->records_per_page, $pagination->offset(), $search_query);
 
 //                                foreach (Payment::find_all_by_payment_type_id(1) as $payment) {
                                 foreach ($objects as $payment) {
