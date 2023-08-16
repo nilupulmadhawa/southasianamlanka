@@ -33,7 +33,6 @@ class Payment extends DatabaseObject {
     public static function find_completed_total_by_invoice_id($value) {
 
         $payments = self::find_by_sql("SELECT * FROM " . self::$table_name . " WHERE payment_status_id=2 OR payment_status_id=1");
-
         
         $total = 0;
         foreach ($payments as $payment) {

@@ -35,7 +35,7 @@ $search_query = isset($_GET['txtSearch']) ? $_GET['txtSearch'] : "";
                             <div class="col-md-6 col-sm-6 col-xs-6 text-right">
                                 <form class="form-inline" method="GET">
                                     <div class="input-group" style="display: flex;width: 400px;float: right;">
-                                        <input class="form-control" placeholder="Search" type="text" id="txtSearch"
+                                        <input class="form-control" placeholder="Customer Name / Invoice" type="text" id="txtSearch"
                                             name="txtSearch" value="<?php echo $search_query??"" ?>">
                                         <div class="input-group-append" style="display: inline-block;">
                                             <button class="btn btn-primary" type="submit"
