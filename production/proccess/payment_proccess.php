@@ -2,6 +2,8 @@
 
 require_once './../../util/initialize.php';
 
+
+
 if (isset($_POST["invoice_balance"])) {
     $invoice_id = $_POST["invoice_id"];
     header('Content-Type: application/json');
@@ -39,6 +41,7 @@ if (isset($_POST["add_invoice_payment"])) {
     $invoice_payment = array();
     $invoice_payment["invoice_id"] = $_POST['invoice_id'];
     $invoice_payment["amount"] = $_POST['amount'];
+    $invoice_payment["balance"] = $_POST['balance'];
 
     if (isset($_SESSION["invoice_payments"])) {
         $_SESSION["invoice_payments"][] = $invoice_payment;
@@ -129,16 +132,112 @@ if (isset($_POST["session_count"])) {
 }
 
 
-if (isset($_POST["save"])) {
+if (isset($_POST["update"])) {
 
+    $payment = Payment::find_by_id($_POST["id"]);
+    $payment->code = $_POST["code"];
+    $payment->payment_method_id = $_POST["payment_method_id"];
+    $payment->date_time = date('Y-m-d H:i:s');
+
+    if ($payment->payment_method_id == 2) {
+        $payment->amount = $_POST["c_amount"];
+    } else {
+        $payment->amount = $_POST["amount"];
+    }
+
+    $payment->user_id = $_SESSION["user"]["id"];
+    $payment->payment_type_id = 1;
+    if ($payment->payment_method_id == 1) {
+        $payment->payment_status_id = 2;
+    } else {
+        $payment->payment_status_id = 1;
+    }
+
+    // global $database;
+    // $database->start_transaction();
+    try {
+        $payment->save();
+        $payment_id = $_POST["id"];
+
+        //delete all payment cheque
+        $payment_cheques = PaymentCheque::find_all_by_payment_id($payment_id);
+        foreach ($payment_cheques as $payment_cheque) {
+            $cheque = $payment_cheque->cheque_id();
+            $cheque->delete();
+            $payment_cheque->delete();
+        }
+        $payment_invoice = PaymentInvoice::find_all_by_payment_id($payment_id);
+        foreach ($payment_invoice as $payment_invoice) {
+            $invoice = $payment_invoice->invoice_id();
+            $invoice->balance += $payment_invoice->amount;
+            $payment_invoice->delete();
+        }
+
+
+
+        if ($payment->payment_method_id == 2 || $payment->payment_method_id == 1) {
+            $cheque = new Cheque();
+            $cheque->bank_id = $_POST["c_bank_id"] ?? 0;
+            if ($payment->payment_method_id == 2) {
+                $cheque->amount = $_POST["c_amount"];
+            } else {
+                $cheque->amount = 0;
+            }
+            $cheque->cheque_no = $_POST["c_number"] ?? "";
+            $cheque->date =  $_POST["c_date"] == "" ? null : $_POST["c_date"];
+            $cheque->branch = $_POST["c_branch"];
+            $cheque->cheque_status_id = 1;
+            $cheque->save();
+
+            $cheque_id = Cheque::last_insert_id();
+            $allocated_amount = $_POST["c_number"];
+
+            $payment_cheque = new PaymentCheque();
+            $payment_cheque->payment_id = $payment_id;
+            $payment_cheque->cheque_id = $cheque_id;
+            //            $payment_cheque->amount=$allocated_amount;
+            if ($payment->payment_method_id == 2) {
+                $payment_cheque->amount = $_POST["c_amount"];
+            } else {
+                $payment_cheque->amount = 0;
+            }
+            $payment_cheque->save();
+        }
+
+        foreach ($_SESSION["invoice_payments"] as $sess_invoice_payment) {
+            $payment_invoice = new PaymentInvoice();
+            $payment_invoice->payment_id = $payment_id;
+            $payment_invoice->invoice_id = $sess_invoice_payment["invoice_id"];
+            $payment_invoice->amount = $sess_invoice_payment["amount"];
+            $payment_invoice->save();
+
+            // if ($payment->payment_method_id == 1) {
+            $invoice = Invoice::get_recalculated_invoice_by_id($sess_invoice_payment["invoice_id"]);
+            $invoice->save();
+            // }
+        }
+        // die();
+        $database->commit();
+        Activity::log_action("Payment (Code:" . $payment->code . ") - saved ");
+        $_SESSION["message"] = "Successfully saved";
+        Functions::redirect_to("./../payment_management.php");
+    } catch (Exception $exc) {
+        $database->rollback();
+        $_SESSION["error"] = "Failed to save payment";
+        print_r($exc);
+        // Functions::redirect_to("./../payment.php");
+    }
+}
+
+if (isset($_POST["save"])) {
     $payment = new Payment();
     $payment->code = $_POST["code"];
     $payment->payment_method_id = $_POST["payment_method_id"];
     $payment->date_time = date('Y-m-d H:i:s');
 
-    if($payment->payment_method_id == 2){
+    if ($payment->payment_method_id == 2) {
         $payment->amount = $_POST["c_amount"];
-    }else{
+    } else {
         $payment->amount = $_POST["amount"];
     }
 
@@ -157,12 +256,17 @@ if (isset($_POST["save"])) {
         $payment->save();
         $payment_id = Payment::last_insert_id();
 
-        if ($payment->payment_method_id == 2) {
+        if ($payment->payment_method_id == 2 || $payment->payment_method_id == 1) {
             $cheque = new Cheque();
-            $cheque->bank_id = $_POST["c_bank_id"];
-            $cheque->amount = $_POST["c_amount"];
-            $cheque->cheque_no = $_POST["c_number"];
-            $cheque->date = $_POST["c_date"];
+            $cheque->bank_id = $_POST["c_bank_id"] ?? 0;
+            if ($payment->payment_method_id == 2) {
+                $cheque->amount = $_POST["c_amount"];
+            } else {
+                $cheque->amount = $_POST[0];
+            }
+            $cheque->cheque_no = $_POST["c_number"] ?? "";
+            $cheque->date =  $_POST["c_date"] == "" ? null : $_POST["c_date"];
+            $cheque->branch = $_POST["c_branch"];
             $cheque->cheque_status_id = 1;
             $cheque->save();
 
@@ -172,8 +276,12 @@ if (isset($_POST["save"])) {
             $payment_cheque = new PaymentCheque();
             $payment_cheque->payment_id = $payment_id;
             $payment_cheque->cheque_id = $cheque_id;
-//            $payment_cheque->amount=$allocated_amount;
-            $payment_cheque->amount = $_POST["c_amount"];
+            //            $payment_cheque->amount=$allocated_amount;
+            if ($payment->payment_method_id == 2) {
+                $payment_cheque->amount = $_POST["c_amount"];
+            } else {
+                $payment_cheque->amount = $_POST[0];
+            }
             $payment_cheque->save();
         }
 
@@ -185,8 +293,8 @@ if (isset($_POST["save"])) {
             $payment_invoice->save();
 
             // if ($payment->payment_method_id == 1) {
-                $invoice = Invoice::get_recalculated_invoice_by_id($sess_invoice_payment["invoice_id"]);
-                $invoice->save();
+            $invoice = Invoice::get_recalculated_invoice_by_id($sess_invoice_payment["invoice_id"]);
+            $invoice->save();
             // }
         }
 
@@ -197,7 +305,8 @@ if (isset($_POST["save"])) {
     } catch (Exception $exc) {
         $database->rollback();
         $_SESSION["error"] = "Failed to save payment";
-        Functions::redirect_to("./../payment.php");
+        print_r($exc);
+        // Functions::redirect_to("./../payment.php");
     }
 }
 
@@ -298,7 +407,7 @@ if (isset($_POST["cancel"])) {
         }
 
         $database->commit();
-//            Activity::log_action("Payment:" . $payment->code . " (Invoices:" . join(", ", $payment_invoice_codes) . " Cheques:" . join(", ", $payment_cheque_names) . ") - canceled ");
+        //            Activity::log_action("Payment:" . $payment->code . " (Invoices:" . join(", ", $payment_invoice_codes) . " Cheques:" . join(", ", $payment_cheque_names) . ") - canceled ");
         Activity::log_action("Payment:" . $payment->code . " - canceled ");
         $_SESSION["message"] = "Successfully canceled";
         Functions::redirect_to("./../payment_management.php");
@@ -313,4 +422,3 @@ if (isset($_POST["authenticate"])) {
     $password = $_POST["password"];
     echo json_encode(Session::authenticate_password($password));
 }
-?>

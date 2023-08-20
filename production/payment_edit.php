@@ -10,8 +10,8 @@ if (!(isset($_GET["id"]) && $payment = Payment::find_by_id($_GET["id"]))) {
 
 if (isset($_GET["id"])) {
     $sql = "SELECT i.id , i.balance, pi.amount  FROM hna0s9ce_saaims.payment_invoice pi
-                                                                        INNER JOIN hna0s9ce_saaims.invoice i ON i.id = pi.id
-                                                                        WHERE pi.payment_id =9";
+                                                                        INNER JOIN hna0s9ce_saaims.invoice i ON i.id = pi.invoice_id
+                                                                        WHERE pi.payment_id =$payment->id";
     $result = $database->query($sql);
     $rowcount = mysqli_num_rows($result);
     if ($rowcount > 0) {
@@ -139,11 +139,11 @@ if (isset($_GET["id"])) {
                                 </div>
                                 <div class="form-group">
                                     <label>Amount</label>
-                                    <input type="text" class="form-control" placeholder="Amount" id="txtAmount" name="amount" required="">
+                                    <input type="text" class="form-control" placeholder="Amount" id="txtAmount" name="amount" required="" value="<?php echo $payment->amount; ?>">
                                 </div>
                                 <div class="form-group">
                                     <label>Payment Method</label>
-                                    <select class="form-control" id="cmbPaymentMethod" name="payment_method_id" required="">
+                                    <select class="form-control" id="cmbPaymentMethod" name="payment_method_id" required="" value="<?php echo $payment->payment_method_id; ?>">
                                         <option disabled="" selected="">Select Payment Method</option>
                                         <?php
                                         foreach (PaymentMethod::find_all() as $paymentmethod) {
@@ -161,18 +161,35 @@ if (isset($_GET["id"])) {
                                     </select>
                                 </div>
 
+                                <?php
+                                $payment_cheque = PaymentCheque::find_all_by_payment_id($payment->id);
+                                if (!empty($payment_cheque)) {
+                                    $cheque = $payment_cheque[0]->cheque_id();
+                                    $c_bank = $cheque->bank_id;
+                                    $c_branch = $cheque->branch;
+                                    $c_no = $cheque->cheque_no;
+                                    $c_date = $cheque->date;
+                                    $c_amount = $cheque->amount;
+                                } else {
+                                    $c_bank = '';
+                                    $c_branch = '';
+                                    $c_no = '';
+                                    $c_date = '';
+                                    $c_amount = '';
+                                }
+                                ?>
                                 <div id="divCheque" style="display: none;">
                                     <div class="form-group divBackTopTable col-md-12 col-sm-12 col-xs-12 ">
                                         <div class="col-md-6 col-sm-6 col-xs-12">
                                             <div class="form-group">
                                                 <label>Bank</label>
-                                                <select class="form-control" id="cmbChequeBank" name="c_bank_id" required="">
+                                                <select class="form-control" id="cmbChequeBank" name="c_bank_id" required="" value="<?php echo $c_bank ?>">
                                                     <!--<option disabled="" selected="">Select Invoice</option>-->
-                                                    <option disabled="" selected="" value="">Select Bank</option>
+                                                    <!-- <option disabled="" selected="" value="">Select Bank</option> -->
                                                     <?php
                                                     foreach (Bank::find_all() as $bank) {
                                                     ?>
-                                                        <option value="<?php echo $bank->id; ?>"><?php echo $bank->name; ?></option>
+                                                        <option <?php echo $bank->id == $c_bank ? 'selected' : ''; ?> value="<?php echo $bank->id; ?>"><?php echo $bank->name; ?></option>
                                                     <?php
                                                     }
                                                     ?>
@@ -180,24 +197,25 @@ if (isset($_GET["id"])) {
                                             </div>
                                             <div id='branch' lass="form-group">
                                                 <label>Branch</label>
-                                                <input type="text" class="form-control" placeholder="Branch" name="c_branch" id="txtBranch">
+                                                <input type="text" class="form-control" placeholder="Branch" name="c_branch" id="txtBranch" value="<?php echo $c_branch ?>">
                                             </div>
                                             <br>
                                             <div class="form-group">
                                                 <label id='chq_no'>Cheque Number</label>
-                                                <input type="text" class="form-control" placeholder="Cheque Number" name="c_number" id="txtChequeNo">
+                                                <input type="text" class="form-control" placeholder="Cheque Number" name="c_number" id="txtChequeNo" value="<?php echo $c_no ?>">
                                             </div>
                                         </div>
                                         <div class="col-md-6 col-sm-6 col-xs-12">
                                             <div class="form-group">
                                                 <label>Date</label>
-                                                <input type="text" class="form-control" placeholder="Date" name="c_date" id="dtpChequeDate">
+                                                <input type="text" class="form-control" placeholder="Date" name="c_date" id="dtpChequeDate" value="<?php echo $c_date ?>">
                                             </div>
                                             <div id="chq_val" class="form-group">
                                                 <label>Cheque Value</label>
-                                                <input type="text" class="form-control" placeholder="Cheque Value" name="c_amount" id="txtChequeAmount">
+                                                <input type="text" class="form-control" placeholder="Cheque Value" name="c_amount" id="txtChequeAmount" value="<?php echo $c_amount ?>">
                                             </div>
                                         </div>
+                                        <input type="hidden" name="update" value="1">
                                     </div>
                                 </div>
                             </div>
@@ -214,11 +232,11 @@ if (isset($_GET["id"])) {
                         <div class="container-fluid ">
                             <!--<div class="modal-footer col-md-12 col-sm-12 col-xs-12">-->
                             <div class=" col-md-4 col-sm-4 col-xs-12">
-                                <button id="btnSave" type="button" name="save" class="btn btn-block btn-success"><i class="fa fa-floppy-o"></i> Save</button>
+                                <button id="btnSave" type="button" name="update" class="btn btn-block btn-success"><i class="fa fa-floppy-o"></i> Update</button>
                             </div>
-                            <div class=" col-md-4 col-sm-4 col-xs-12" style="display: <?php echo (empty($payment->id)) ? 'none' : 'initial'; ?>">
+                            <!-- <div class=" col-md-4 col-sm-4 col-xs-12" style="display: <?php echo (empty($payment->id)) ? 'none' : 'initial'; ?>">
                                 <button id="btnDelete" type="button" name="delete" class="btn btn-block btn-danger"><i class="fa fa-trash"></i> Delete</button>
-                            </div>
+                            </div> -->
                             <div class=" col-md-4 col-sm-4 col-xs-12">
                                 <a href="payment.php"><button type="button" name="reset" class="btn btn-block btn-primary"><i class="fa fa-history"></i> Reset</button></a>
                             </div>
@@ -253,10 +271,9 @@ if (isset($_GET["id"])) {
         $("#dtpDate").datepicker({
             changeMonth: true,
             changeYear: true,
-            dateFormat: 'yy-mm-dd'
+            dateFormat: ' yy-mm-dd'
         });
     });
-
     $(function() {
         $("#dtpChequeDate").datepicker({
             changeMonth: true,
@@ -264,7 +281,6 @@ if (isset($_GET["id"])) {
             dateFormat: 'yy-mm-dd'
         });
     });
-
     $("#cmbFilter").change(function() {
         var filter_id = $("#cmbFilter").val();
         loadInvoiceForm();
@@ -292,7 +308,6 @@ if (isset($_GET["id"])) {
         });
         $('#cmbInvoice').append(trHTML);
     }
-
     $("#cmbPaymentMethod").change(function() {
         var payment_method_id = $("#cmbPaymentMethod").val();
         loadPaymentMethod(payment_method_id);
@@ -308,10 +323,7 @@ if (isset($_GET["id"])) {
             $("#txtChequeNo").attr("placeholder", "Cheque Number");
             $("#chq_val").show();
             $("#branch").show();
-
-
         } else {
-
             $("#divCheque").css({
                 "display": "initial"
             });
@@ -320,11 +332,8 @@ if (isset($_GET["id"])) {
             $("#txtChequeNo").attr("placeholder", "Account Number");
             $("#chq_val").hide();
             $("#branch").hide();
-
-
         }
     }
-
     $("#txtAmount").change(function() {
         var value = $("#txtAmount").val();
         $("#txtChequeAmount").val(value);
@@ -341,9 +350,6 @@ if (isset($_GET["id"])) {
         var value = $("#txtChequeAmount").val();
         $("#txtAmount").val(value);
     });
-
-
-
     $("#cmbInvoice").change(function() {
         var invoice_id = $("#cmbInvoice").val();
         $("#txtInvoiceAmount").val(getBalance(invoice_id));
@@ -396,7 +402,6 @@ if (isset($_GET["id"])) {
         var errors = new Array();
         var element;
         var element_value;
-
         element = $("#cmbInvoice");
         element_value = element.val();
         if (element_value) {
@@ -415,21 +420,15 @@ if (isset($_GET["id"])) {
             element.css({
                 "border": "1px solid red"
             });
-        }
-
-        // element = $("#txtInvoiceAmount");
-        // element_value = element.val();
-        // if (element_value !== "" && (Validation.validatePrice(element_value))) {
-        //     var invoice_id = $("#cmbInvoice").val();
-        //     if (invoice_id && parseInt(getBalance(invoice_id)) >= element_value) {
-        //         element.css({"border": "1px solid #ccc"});
-        //     } else {
-        //         errors.push("Amount is higher than the invoice balance ");
-        //         element.css({"border": "1px solid red"});
-        //     }
+        } // element=$("#txtInvoiceAmount"); // element_value=element.val(); // if (element_value !=="" && (Validation.validatePrice(element_value))) { // var invoice_id=$("#cmbInvoice").val(); // if (invoice_id && parseInt(getBalance(invoice_id))>= element_value) {
+        // element.css({"border": "1px solid #ccc"});
         // } else {
-        //     errors.push("Invoice Amount - Invalid");
-        //     element.css({"border": "1px solid red"});
+        // errors.push("Amount is higher than the invoice balance ");
+        // element.css({"border": "1px solid red"});
+        // }
+        // } else {
+        // errors.push("Invoice Amount - Invalid");
+        // element.css({"border": "1px solid red"});
         // }
 
         return errors;
@@ -457,7 +456,7 @@ if (isset($_GET["id"])) {
                     balance: balance
                 },
                 success: function(data) {
-                    //                    calculate_final_total();
+                    // calculate_final_total();
                     fillTable();
                     loadInvoiceForm();
                     new PNotify({
@@ -516,6 +515,7 @@ if (isset($_GET["id"])) {
                     var btnClose = "<button type='button' onclick='removeRow(this)' id='" + value["index"] + "' class='btn btn-danger btn-xs'><i class='fa fa-close'></i></button>";
 
                     trHTML += "<tr id='" + value["index"] + "'><td>" + value["invoice_id"]["code"] + "</td><td>" + value["invoice_id"]["date_time"] + "</td><td>" + value["invoice_id"]["net_amount"] + "</td><td>" + value["balance"] + "</td><td>" + value["amount"] + "</td><td class='col-sm-2'>" + btnEdit + btnClose + "</td></tr>";
+
                 });
 
                 $('#txtAmount').val(data.total.toFixed(2));
@@ -579,11 +579,11 @@ if (isset($_GET["id"])) {
             success: function(data) {
                 fillTable();
 
-                //                $('#cmbFilter').prop('selectedIndex', 0);
+                // $('#cmbFilter').prop('selectedIndex', 0);
                 $('#cmbFilter').val("all");
                 loadInvoices("all");
 
-                //                $('#cmbInvoice').prop('selectedIndex', data.invoice_id);
+                // $('#cmbInvoice').prop('selectedIndex', data.invoice_id);
                 $('#cmbInvoice').val(data.invoice_id);
                 $("#txtInvoiceAmount").val(data.amount);
 
@@ -886,8 +886,8 @@ if (isset($_GET["id"])) {
     }
 
     $("#btnSave").click(function() {
-        //        var id = <?php // echo ($payment->id) ? 1 : 0;               
-                            ?>;
+        // var id = <?php // echo ($payment->id) ? 1 : 0;               
+                    ?>;
 
         if (UserPrivileges.checkPrivilege("proccess/privileges_authenticate.php", "Payment", "ins")) {
             FormOperations.confirmSave(validateForm(), "#form");
@@ -895,7 +895,9 @@ if (isset($_GET["id"])) {
 
     });
 
-    //    $("#btnDelete").click(function () {
-    //        FormOperations.confirmDelete("#form");
-    //    });
+    // $("#btnDelete").click(function () {
+    // FormOperations.confirmDelete("#form");
+    // });
+
+    $("#cmbPaymentMethod").trigger("change");
 </script>

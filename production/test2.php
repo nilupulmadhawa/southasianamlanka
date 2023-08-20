@@ -19,11 +19,13 @@ require_once './../util/initialize.php';
 //   echo $new_data->code." | ".$new_data->customer_id()->name." | ".$repname->name." <br/>";
 // }
 
-foreach(Product::find_all() as $product){
-  $batch = Batch::find_all_by_product_id($product->id);
-  if( count($batch) > 1 ){
-    echo $product->name.'<br>';
-  }
-}
+// foreach(Product::find_all() as $product){
+//   $batch = Batch::find_all_by_product_id($product->id);
+//   if( count($batch) > 1 ){
+//     echo $product->name.'<br>';
+//   }
+// }
+    
+    print_r(Invoice::get_recalculated_invoice_by_id('38'));
 
 ?>

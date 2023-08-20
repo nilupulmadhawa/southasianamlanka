@@ -10,17 +10,17 @@ defined("DS") ? null : define("DS", DIRECTORY_SEPARATOR);
 
 
 ///////////////////////production//////////////////////////
-// defined("DB_SERVER") ? null : define("DB_SERVER", "localhost");
-// defined("DB_USER") ? null : define("DB_USER", "hna0s9ce_saaims");
-// defined("DB_PASS") ? null : define("DB_PASS", "JONR!7VsW6UWRNav2u");
-// defined("DB_NAME") ? null : define("DB_NAME", "hna0s9ce_saaims");
-
-
-
-///////////////////////production//////////////////////////
 defined("DB_SERVER") ? null : define("DB_SERVER", "localhost");
-defined("DB_USER") ? null : define("DB_USER", "root");
-defined("DB_PASS") ? null : define("DB_PASS", "root");
-defined("DB_NAME") ? null : define("DB_NAME", "newschema");
+defined("DB_USER") ? null : define("DB_USER", "zigmpelb_saaims");
+defined("DB_PASS") ? null : define("DB_PASS", "zigmpelb_dev");
+defined("DB_NAME") ? null : define("DB_NAME", "zigmpelb_dev");
+
+
+
+///////////////////////local//////////////////////////
+// defined("DB_SERVER") ? null : define("DB_SERVER", "localhost");
+// defined("DB_USER") ? null : define("DB_USER", "root");
+// defined("DB_PASS") ? null : define("DB_PASS", "123456789");
+// defined("DB_NAME") ? null : define("DB_NAME", "hna0s9ce_saaims");
 
 //defined("PROJECT_NAME") ? null : define("PROJECT_NAME", "Leeshya Distributors");

@@ -362,6 +362,7 @@ $user = User::find_by_id($_SESSION["user"]["id"]);
               echo '<li><a href="commision_reports.php">Commision Report</a></li>';
               echo '<li><a href="cheque_reports.php">Cheque Commision Details Report</a></li>';
               echo '<li><a href="writeoff_reports.php">Write-off Invoice Details Report</a></li>';
+              echo '<li><a href="return_cheq_rep_wise.php">Return Cheque Rep Wise Report</a></li>';
             }
 
             ?>

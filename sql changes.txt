@@ -1,0 +1,4 @@
+ALTER TABLE `over_payment` 
+CHANGE COLUMN `amount` `amount` DECIMAL(10,2) NOT NULL DEFAULT '0' ;
+
+INSERT INTO `bank` (`id`, `name`) VALUES ('0', 'Other');

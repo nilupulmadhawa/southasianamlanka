@@ -134,6 +134,10 @@ include './common/upper_content.php';
                       <a href="#tab_content5" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">Customer Documents</a>
                     </li>
 
+                    <li role="presentation" class="">
+                      <a href="#tab_content6" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">Over Payments Settlement</a>
+                    </li>
+
                   </ul>
                   <div id="myTabContent" class="tab-content">
 
@@ -178,6 +182,35 @@ include './common/upper_content.php';
                         </table>
                       </div>
                     </div>
+                    <div role="tabpanel" class="tab-pane fade" id="tab_content6" aria-labelledby="profile-tab">
+                      <div class="container-fluid">
+                        <table class="dt table table-striped dt-button-collection table-condensed"  width="100%">
+                          <thead>
+                            <tr>
+                                <th>Invoice Id</th>
+                                <th>Amount</th>
+                                <th>From Invoice</th>
+                                <th>Settlement Date</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <?php
+                                foreach (OverPayment::find_all_by_from_customer_id($id) as $value) {
+                                   echo "<tr>";
+                                   echo "<td>".$value->invoice_id."</td>";
+                                   echo "<td>".$value->amount."</td>";
+                                   echo "<td>".$value->from_invoice."</td>";
+                                   echo "<td>".$value->settlement_date."</td>";
+                                   echo "</tr>";
+                                }
+                            // cheque body start
+
+                            // cheque body ends
+                            ?>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
 
 
                     <div role="tabpanel" class="tab-pane fade" id="tab_content5" aria-labelledby="profile-tab">
@@ -200,7 +233,6 @@ include './common/upper_content.php';
                           <label><b>Propriter's ID Copy :</b></label>
                           <img src="uploads/customers/<?php echo $customer->id_image; ?>" style='width: 100%;'>
                         </div>
-
 
                       </div>
                     </div>

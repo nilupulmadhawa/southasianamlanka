@@ -164,20 +164,30 @@ if (isset($_POST["confirm_cheque"])) {
             //     foreach ($payment_invoices as $payment_invoice) {
             //         $invoice = Invoice::get_recalculated_invoice_by_id($payment_invoice->invoice_id);
             //         $invoice->save();
-            //         $payment_invoice_codes[] = $invoice->code;
             //     }
             // } else if ($payment->payment_type_id == 2) {
             //     $customer_payment = CustomerPayment::find_by_payment_id($payment->id);
             //     $customer = $customer_payment->customer_id();
-                
-            //     if ($payment->payment_status_id == 2) {
-            //         $customer->balance = ($customer->balance) - ($payment->amount);
-            //     } else if ($payment->payment_status_id == 3) {
-
-            //     }
-                
+            //     $customer->balance = ($customer->balance) + ($payment->amount);
             //     $customer->save();
             // }
+
+            // $database->commit();
+            
+
+            if ($payment->payment_type_id == 1) {
+                $payment_invoices = PaymentInvoice::find_all_by_payment_id($payment->id); 
+                foreach ($payment_invoices as $payment_invoice) {
+                    $invoice = Invoice::get_recalculated_invoice_by_id($payment_invoice->invoice_id);
+                    $invoice->save();
+                    $payment_invoice_codes[] = $invoice->code;
+                }
+            } else if ($payment->payment_type_id == 2) {
+                $customer_payment = CustomerPayment::find_by_payment_id($payment->id);
+                $customer = $customer_payment->customer_id();
+                $customer->balance = ($customer->balance) + ($payment->amount);
+                $customer->save();
+            }
         }
 
 //        Activity::log_action("Cheque:" . $cheque->bank_id()->name . "-" . $cheque->cheque_no . " (Invoices:" . join(", ", $payment_invoice_codes) . ") - confirmed ");

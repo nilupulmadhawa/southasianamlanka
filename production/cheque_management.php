@@ -112,9 +112,9 @@ include 'common/upper_content.php';
 <?php include 'common/bottom_content.php'; ?>
 
 <script>
-    window.onfocus = function () {
-        location.reload();
-    };
+    // window.onfocus = function () {
+    //     location.reload();
+    // };
 
     $(".btnCheque").click(function () {
         if (UserPrivileges.checkPrivilege("proccess/privileges_authenticate.php", "Cheque", "upd")) {
@@ -166,6 +166,7 @@ include 'common/upper_content.php';
             async: false,
             success: function (data) {
                 result = data;
+                location.reload();
             },
             error: function (xhr) {
                 alert(xhr.responseText);

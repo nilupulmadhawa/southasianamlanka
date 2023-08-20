@@ -33,7 +33,6 @@ class Payment extends DatabaseObject {
     public static function find_completed_total_by_invoice_id($value) {
 
         $payments = self::find_by_sql("SELECT * FROM " . self::$table_name . " WHERE payment_status_id=2 OR payment_status_id=1");
-
         
         $total = 0;
         foreach ($payments as $payment) {
@@ -56,7 +55,7 @@ class Payment extends DatabaseObject {
     public static function find_all_by_customer_id($value) {
         global $database;
         $value = $database->escape_value($value);
-        $object_array = self::find_by_sql("SELECT payment.* FROM " . self::$table_name . " INNER JOIN payment_invoice ON payment_invoice.payment_id=payment.id INNER JOIN invoice ON payment_invoice.invoice_id=invoice.id WHERE customer_id='$value'");
+        $object_array = self::find_by_sql("SELECT payment.* FROM " . self::$table_name . "INNER JOIN payment_invoice ON payment_invoice.payment_id=payment.id INNER JOIN invoice ON payment_invoice.invoice_id=invoice.id WHERE customer_id='$value'");
         return $object_array;
     }
     
@@ -74,9 +73,9 @@ class Payment extends DatabaseObject {
         // should have use inner join with connect costomer table and invoice table and shoud search query to search invoice number and customer name
     
         if (!empty($search_query)) {
-            $sql .= " INNER JOIN newschema.payment_invoice  ON payment_invoice.payment_id = payment.id 
-            INNER JOIN newschema.invoice  ON invoice.id = payment_invoice.invoice_id 
-            INNER JOIN newschema.customer  ON customer.id = invoice.customer_id  WHERE invoice.code LIKE '%" . $search_query . "%' OR customer.name LIKE '%" . $search_query . "%'";
+            $sql .= " INNER JOIN payment_invoice  ON payment_invoice.payment_id = payment.id 
+            INNER JOIN invoice  ON invoice.id = payment_invoice.invoice_id 
+            INNER JOIN customer  ON customer.id = invoice.customer_id  WHERE invoice.code LIKE '%" . $search_query . "%' OR customer.name LIKE '%" . $search_query . "%'";
         }
         // else{
         //     $sql .= " LIMIT $limit OFFSET $offset";

@@ -195,7 +195,7 @@ class Invoice extends DatabaseObject {
         foreach($invoice_total_return as $data){
           $return_total = $return_total + $data->return_amount;
         }
-
+ 
         $invoice->balance = ($invoice->net_amount) - ($invoice_total_payment) - ($return_total);
 
         if (($invoice->balance) > 0) {
