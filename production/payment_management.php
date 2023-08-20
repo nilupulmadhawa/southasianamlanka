@@ -27,19 +27,16 @@ $search_query = isset($_GET['txtSearch']) ? $_GET['txtSearch'] : "";
                     <div class="x_title">
                         <div class="row">
                             <div class="col-md-6 col-sm-6 col-xs-6">
-                                <a href="payment.php" target="_blank" class="btn btn-round btn-primary"
-                                    data-toggle="modal" data-target=".bs-example-modal-lg">
+                                <a href="payment.php" target="_blank" class="btn btn-round btn-primary">
                                     <i class="glyphicon glyphicon-plus"></i> Add New
                                 </a>
                             </div>
                             <div class="col-md-6 col-sm-6 col-xs-6 text-right">
                                 <form class="form-inline" method="GET">
                                     <div class="input-group" style="display: flex;width: 400px;float: right;">
-                                        <input class="form-control" placeholder="Customer Name / Invoice" type="text" id="txtSearch"
-                                            name="txtSearch" value="<?php echo $search_query??"" ?>">
+                                        <input class="form-control" placeholder="Customer Name / Invoice" type="text" id="txtSearch" name="txtSearch" value="<?php echo $search_query ?? "" ?>">
                                         <div class="input-group-append" style="display: inline-block;">
-                                            <button class="btn btn-primary" type="submit"
-                                                style="vertical-align: top;">Search</button>
+                                            <button class="btn btn-primary" type="submit" style="vertical-align: top;">Search</button>
                                         </div>
                                     </div>
                                 </form>
@@ -74,9 +71,9 @@ $search_query = isset($_GET['txtSearch']) ? $_GET['txtSearch'] : "";
                                 $pagination = new Pagination($total_records);
                                 $objects = Payment::find_all_by_limit_offset_test($pagination->records_per_page, $pagination->offset(), $search_query);
 
-//                                foreach (Payment::find_all_by_payment_type_id(1) as $payment) {
+                                //                                foreach (Payment::find_all_by_payment_type_id(1) as $payment) {
                                 foreach ($objects as $payment) {
-                                    ?>
+                                ?>
                                     <tr id="<?php echo $payment->id; ?>">
                                         <td><?php echo $payment->code ?></td>
                                         <td>
@@ -94,26 +91,26 @@ $search_query = isset($_GET['txtSearch']) ? $_GET['txtSearch'] : "";
                                         <td><?php echo $payment->payment_method_id()->name ?></td>
 
                                         <?php
-                                        if($payment->payment_method_id == 2){
-                                          $cheque_details = PaymentCheque::find_by_payment_id($payment->id);
-                                          ?>
-                                          <td style='text-align:center;'> <?php echo $cheque_details->cheque_id()->cheque_no; ?>  </td>
-                                          <td>--</td>
-                                          <td style='text-align:center;'> <b><?php echo $cheque_details->cheque_id()->bank_id()->name; ?></b>  </td>
-                                          <td style='text-align:center;'> <b><?php echo $cheque_details->cheque_id()->branch; ?></b>  </td>
-                                          <td style='text-align:center;'> <?php echo $cheque_details->cheque_id()->date; ?>  </td>
-                                          <td>--</td>
+                                        if ($payment->payment_method_id == 2) {
+                                            $cheque_details = PaymentCheque::find_by_payment_id($payment->id);
+                                        ?>
+                                            <td style='text-align:center;'> <?php echo $cheque_details->cheque_id()->cheque_no; ?> </td>
+                                            <td>--</td>
+                                            <td style='text-align:center;'> <b><?php echo $cheque_details->cheque_id()->bank_id()->name; ?></b> </td>
+                                            <td style='text-align:center;'> <b><?php echo $cheque_details->cheque_id()->branch; ?></b> </td>
+                                            <td style='text-align:center;'> <?php echo $cheque_details->cheque_id()->date; ?> </td>
+                                            <td>--</td>
 
-                                          <?php
-                                        }else{
-                                          ?>
-                                          <td>--</td>
-                                          <td style='text-align:center;'> <?php echo $cheque_details->cheque_id()->cheque_no; ?>  </td>
-                                          <td style='text-align:center;'> <b><?php echo $cheque_details->cheque_id()->bank_id()->name; ?></b>  </td>
-                                          <td>--</td>
-                                          <td>--</td>
-                                          <td style='text-align:center;'> <?php echo $cheque_details->cheque_id()->date; ?>  </td>
-                                          <?php
+                                        <?php
+                                        } else {
+                                        ?>
+                                            <td>--</td>
+                                            <td style='text-align:center;'> <?php echo $cheque_details->cheque_id()->cheque_no; ?> </td>
+                                            <td style='text-align:center;'> <b><?php echo $cheque_details->cheque_id()->bank_id()->name; ?></b> </td>
+                                            <td>--</td>
+                                            <td>--</td>
+                                            <td style='text-align:center;'> <?php echo $cheque_details->cheque_id()->date; ?> </td>
+                                        <?php
                                         }
                                         ?>
 
@@ -122,23 +119,24 @@ $search_query = isset($_GET['txtSearch']) ? $_GET['txtSearch'] : "";
                                         <td><?php echo $payment->payment_status_id()->name ?></td>
                                         <td>
                                             <form action="payment_prev.php" method="post" target="_blank" style="float: left;">
-                                                <input type="hidden" name="payment_id" value="<?php echo $payment->id ?>"/>
-                                                <button type="submit" name="view" class="btn btn-primary btn-xs" ><i class="fa fa-external-link-square"></i> View</button>
+                                                <input type="hidden" name="payment_id" value="<?php echo $payment->id ?>" />
+                                                <button type="submit" name="view" class="btn btn-primary btn-xs"><i class="fa fa-external-link-square"></i> View</button>
+                                                <a class="btn btn-primary btn-xs" href="./payment_edit.php?id=<?php echo $payment->id ?>"> Edit</a>
                                             </form>
 
                                             <?php
                                             if ($payment->payment_status_id != 3) {
-                                                ?>
+                                            ?>
                                                 <form id="form_cancel" action="proccess/payment_proccess.php" method="post" style="float: left;">
-                                                    <input type="hidden" name="payment_id" value="<?php echo $payment->id ?>"/>
-                                                    <button id="<?php echo $payment->id ?>" type="submit" name="cancel" class="btn btn-danger btn-xs btnCancel" ><i class="fa fa-close"></i> Cancel</button>
+                                                    <input type="hidden" name="payment_id" value="<?php echo $payment->id ?>" />
+                                                    <button id="<?php echo $payment->id ?>" type="submit" name="cancel" class="btn btn-danger btn-xs btnCancel"><i class="fa fa-close"></i> Cancel</button>
                                                 </form>
-                                                <?php
+                                            <?php
                                             }
                                             ?>
                                         </td>
                                     </tr>
-                                    <?php
+                                <?php
                                 }
                                 ?>
                             </tbody>
@@ -161,13 +159,13 @@ $search_query = isset($_GET['txtSearch']) ? $_GET['txtSearch'] : "";
 <?php include 'common/bottom_content.php'; ?>
 
 <script>
-    window.onfocus = function () {
-//        location.reload();
+    window.onfocus = function() {
+        //        location.reload();
     };
 
-    $(".btnCancel").click(function () {
-//        submitForm(true, "#form_cancel");
-//        submitForm("#form_cancel");
+    $(".btnCancel").click(function() {
+        //        submitForm(true, "#form_cancel");
+        //        submitForm("#form_cancel");
 
         if (UserPrivileges.checkPrivilege("proccess/privileges_authenticate.php", "Payment", "upd")) {
             submitForm(this);
@@ -180,13 +178,16 @@ $search_query = isset($_GET['txtSearch']) ? $_GET['txtSearch'] : "";
         $.ajax({
             type: 'POST',
             url: "proccess/payment_proccess.php",
-            data: {cancel_payment: true, payment_id: element.id},
+            data: {
+                cancel_payment: true,
+                payment_id: element.id
+            },
             dataType: 'json',
             async: false,
-            success: function (data) {
+            success: function(data) {
                 result = data;
             },
-            error: function(xhr){
+            error: function(xhr) {
                 alert(xhr.responseText);
             }
         });
@@ -197,17 +198,17 @@ $search_query = isset($_GET['txtSearch']) ? $_GET['txtSearch'] : "";
         $.confirm({
             title: 'Cancel Payment ?',
             content: '' +
-                    '<form action="" class="formName">' +
-                    '<div class="form-group">' +
-                    '<label>Enter login password to cancel payment</label>' +
-                    '<input type="password" placeholder="Password" class="name form-control" required />' +
-                    '</div>' +
-                    '</form>',
+                '<form action="" class="formName">' +
+                '<div class="form-group">' +
+                '<label>Enter login password to cancel payment</label>' +
+                '<input type="password" placeholder="Password" class="name form-control" required />' +
+                '</div>' +
+                '</form>',
             buttons: {
                 formSubmit: {
                     text: 'Cancel Payment',
                     btnClass: 'btn-red',
-                    action: function () {
+                    action: function() {
                         var password = this.$content.find('.name').val();
                         if (authenticate(password)) {
                             var result = submit(element);
@@ -221,8 +222,7 @@ $search_query = isset($_GET['txtSearch']) ? $_GET['txtSearch'] : "";
                                     type: 'green',
                                     typeAnimated: true,
                                     buttons: {
-                                        close: function () {
-                                        }
+                                        close: function() {}
                                     }
                                 });
                             } else {
@@ -232,8 +232,7 @@ $search_query = isset($_GET['txtSearch']) ? $_GET['txtSearch'] : "";
                                     type: 'red',
                                     typeAnimated: true,
                                     buttons: {
-                                        close: function () {
-                                        }
+                                        close: function() {}
                                     }
                                 });
                             }
@@ -244,21 +243,20 @@ $search_query = isset($_GET['txtSearch']) ? $_GET['txtSearch'] : "";
                                 type: 'red',
                                 typeAnimated: true,
                                 buttons: {
-                                    close: function () {
-                                    }
+                                    close: function() {}
                                 }
                             });
                         }
                     }
                 },
-                cancel: function () {
+                cancel: function() {
                     //close
                 },
             },
-            onContentReady: function () {
+            onContentReady: function() {
                 // bind to events
                 var jc = this;
-                this.$content.find('form').on('submit', function (e) {
+                this.$content.find('form').on('submit', function(e) {
                     // if the user submits the form by pressing enter in the field.
                     e.preventDefault();
                     jc.$$formSubmit.trigger('click'); // reference the button and click it
@@ -273,10 +271,13 @@ $search_query = isset($_GET['txtSearch']) ? $_GET['txtSearch'] : "";
         $.ajax({
             type: 'POST',
             url: "proccess/payment_proccess.php",
-            data: {authenticate: true, password: password},
+            data: {
+                authenticate: true,
+                password: password
+            },
             dataType: 'json',
             async: false,
-            success: function (data) {
+            success: function(data) {
                 result = data;
             }
         });
