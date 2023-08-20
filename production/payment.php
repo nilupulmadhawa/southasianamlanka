@@ -9,8 +9,8 @@ if (!(isset($_GET["id"]) && $payment = Payment::find_by_id($_GET["id"]))) {
 }
 
 if (isset($_GET["id"])) {
-    $sql = "SELECT i.id , i.balance, pi.amount  FROM hna0s9ce_saaims.payment_invoice pi
-                                                                        INNER JOIN hna0s9ce_saaims.invoice i ON i.id = pi.id
+    $sql = "SELECT i.id , i.balance, pi.amount  FROM payment_invoice pi
+                                                                        INNER JOIN invoice i ON i.id = pi.id
                                                                         WHERE pi.payment_id =9";
     $result = $database->query($sql);
     $rowcount = mysqli_num_rows($result);

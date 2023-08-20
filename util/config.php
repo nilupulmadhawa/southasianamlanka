@@ -11,13 +11,13 @@ defined("DS") ? null : define("DS", DIRECTORY_SEPARATOR);
 
 ///////////////////////production//////////////////////////
 defined("DB_SERVER") ? null : define("DB_SERVER", "localhost");
-defined("DB_USER") ? null : define("DB_USER", "zigmpelb_saaims");
+defined("DB_USER") ? null : define("DB_USER", "zigmpelb_dev");
 defined("DB_PASS") ? null : define("DB_PASS", "zigmpelb_dev");
-defined("DB_NAME") ? null : define("DB_NAME", "zigmpelb_dev");
+defined("DB_NAME") ? null : define("DB_NAME", "zigmpelb_saaims");
 
 
 
-///////////////////////local//////////////////////////
+// ///////////////////////local//////////////////////////
 // defined("DB_SERVER") ? null : define("DB_SERVER", "localhost");
 // defined("DB_USER") ? null : define("DB_USER", "root");
 // defined("DB_PASS") ? null : define("DB_PASS", "123456789");
