@@ -49,10 +49,10 @@ function fix_invoice_balance($invoice_number)
         $invoice->invoice_status_id = 2;
     } else if ($balance < 0) {
         $invoice->balance = $balance;
-        $invoice->invoice_status_id = 1;
+        $invoice->invoice_status_id = 2;
     } else if ($balance > 0) {
         $invoice->balance = $balance;
-        $invoice->invoice_status_id = 2;
+        $invoice->invoice_status_id = 1;
     }
 
     $invoice->save();
